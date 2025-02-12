@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import {
-  MainView,
   EditorView
 } from '@/views'
 import { ref } from 'vue'
