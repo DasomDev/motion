@@ -1,0 +1,37 @@
+/* @import url('https://cdn.jsdelivr.net/gh/sun-typeface/SUIT/fonts/variable/woff2/SUIT-Variable.css'); */
+@import url("https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #805EE8;
+  --primary-accent-color: #532EC1;
+  --secondary-color: #E8E0FF;
+  --light-gray-color: #F5F5F5;
+  --middle-gray-color: #E6E6E6;
+  --accent-gray-color: #DBDBDB;
+}
+
+@layer base {
+  #app {
+    /* font-family: 'SUIT Variable', system-ui, sans-serif; */
+    font-family: 'Wanted Sans Variable', 'Wanted Sans', -apple-system, BlinkMacSystemFont, system-ui,
+      'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--primary-color)] rounded-[10px] transition-all duration-200 px-6 h-10 text-white hover:bg-[var(--primary-accent-color)];
+  }
+  .btn-grey {
+    @apply bg-[var(--light-gray-color)] rounded-[10px] transition-all duration-200 px-6 h-10 hover:bg-[var(--accent-gray-color)];
+  }
+
+  .btn-white {
+    @apply bg-white rounded-[10px] transition-all duration-200 px-6 h-10 border-[var(--primary-color)] border text-[var(--primary-color)] hover:bg-[var(--secondary-color)] hover:text-[var(--primary-accent-color)] hover:border-[var(--primary-accent-color)];
+  }
+}

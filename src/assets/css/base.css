@@ -1,0 +1,40 @@
+@import './tailwind.css';
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    /* font-weight: normal; */
+}
+
+body {
+    /* min-height: 100vh; */
+    color: #333;
+    background: #ffffff;
+    transition: color 0.5s, background-color 0.5s;
+    line-height: 1.6;
+    font-family: 'Wanted Sans Variable', 'Wanted Sans', -apple-system, BlinkMacSystemFont, system-ui,
+    'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    font-size: 16px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+    margin: 0 auto;
+    font-weight: normal;
+}
+
+/* 컴포넌트 확인 */
+select {
+    background: url(/src/assets/images/form-select-icon.svg) no-repeat calc(100% - 8px);
+    line-height: 1;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
