@@ -9,7 +9,7 @@ const { ANIMATION_TYPE, selectedAnimationType } = storeToRefs(controllerStore)
 <template>
   <!-- TYPE SELECT -->
   <div class="p-4 bg-gray-100 rounded-lg">
-    <h3>애니메이션타입{{ selectedAnimationType }}</h3>
+    <h3>애니메이션타입</h3>
     <label
         v-for="animation in ANIMATION_TYPE"
         :key="animation.id"

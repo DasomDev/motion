@@ -31,7 +31,6 @@ export const useControllerStore = defineStore('controller', () => {
     },
   ])
 
-
   const EASING_OPTIONS = ref([
     { value: 'linear', label: 'Linear' },
     { value: 'ease', label: 'Ease' },
@@ -63,6 +62,7 @@ export const useControllerStore = defineStore('controller', () => {
     scaleEnd: 0,
     duration: 1000,
     easing: 'linear',
+    loop: false,
   })
 
   const play = () => {
@@ -73,12 +73,29 @@ export const useControllerStore = defineStore('controller', () => {
     const element = document.querySelector(`#${selectedObject.value.id}`)
     if (!element) return alert('id확인해')
 
-    const startTime = Date.now()
+    // Store initial values before animation
+    const initialState = {
+      x: Number(selectedObject.value.x) || 0,
+      y: Number(selectedObject.value.y) || 0,
+      scale: 1,
+      rotate: 0,
+      opacity: 1
+    }
+
+    let startTime = Date.now()
+    const { duration, loop } = animationConfig.value
 
     function animate() {
       const currentTime = Date.now()
       const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / animationConfig.value.duration, 1)
+      let progress = elapsed / duration
+
+      // Handle looping
+      if (loop) {
+        progress = progress % 1
+      } else {
+        progress = Math.min(progress, 1)
+      }
 
       switch (selectedAnimationType.value) {
         case 'translate':
@@ -95,8 +112,11 @@ export const useControllerStore = defineStore('controller', () => {
           break
       }
 
-      if (progress < 1) {
+      if (loop || progress < 1) {
         requestAnimationFrame(animate)
+      } else if (progress >= 1) {
+        // Reset to initial state when animation completes
+        resetToInitialState(element, initialState)
       }
     }
 
@@ -125,6 +145,10 @@ export const useControllerStore = defineStore('controller', () => {
     const { scaleStart, scaleEnd } = animationConfig.value
     const currentScale = scaleStart + (scaleEnd - scaleStart) * progress
     updateTransform(element, { scale: currentScale })
+    
+    // Make sure x and y are not being modified during scale animation
+    selectedObject.value.x = Number(selectedObject.value.x) || 0
+    selectedObject.value.y = Number(selectedObject.value.y) || 0
   }
 
   const handleRotateAnimation = (element, progress) => {
@@ -142,43 +166,70 @@ export const useControllerStore = defineStore('controller', () => {
 
   // Helper function to manage transforms
   const updateTransform = (element, newTransform) => {
-    const transforms = {
+    // Get current transform values from dataset or use defaults
+    const currentTransform = {
       translate: element.dataset.translate || '0px, 0px',
       scale: element.dataset.scale || '1',
-      rotate: element.dataset.rotate || '0deg'
+      rotate: element.dataset.rotate || '0deg',
     }
 
-    // Update only the provided transform
+    // Update only the specified transform type
     if (newTransform.translate) {
-      transforms.translate = newTransform.translate
+      element.style.transform = `translate(${newTransform.translate})`
       element.dataset.translate = newTransform.translate
-    }
-    if (newTransform.scale) {
-      transforms.scale = newTransform.scale
+    } else if (newTransform.scale) {
+      element.style.transform = `scale(${newTransform.scale})`
       element.dataset.scale = newTransform.scale
-    }
-    if (newTransform.rotate) {
-      transforms.rotate = newTransform.rotate
+    } else if (newTransform.rotate) {
+      element.style.transform = `rotate(${newTransform.rotate})`
       element.dataset.rotate = newTransform.rotate
     }
-
-    // Apply all transforms together
-    element.style.transform = `translate(${transforms.translate}) scale(${transforms.scale}) rotate(${transforms.rotate})`
   }
+  // const updateTransform = (element, newTransform) => {
+  //   const transforms = {
+  //     translate: element.dataset.translate || '0px, 0px',
+  //     scale: element.dataset.scale || '1',
+  //     rotate: element.dataset.rotate || '0deg',
+  //   }
 
-  const addTranslateAnimation = () => {
-    animations.value.push({
-      id: animations.value.length + 1,
-      type: 'translate',
-      config: animationConfig.value,
-    })
-  }
+  //   // Update only the provided transform
+  //   if (newTransform.translate) {
+  //     transforms.translate = newTransform.translate
+  //     element.dataset.translate = newTransform.translate
+  //   }
+  //   if (newTransform.scale) {
+  //     transforms.scale = newTransform.scale
+  //     element.dataset.scale = newTransform.scale
+  //   }
+  //   if (newTransform.rotate) {
+  //     transforms.rotate = newTransform.rotate
+  //     element.dataset.rotate = newTransform.rotate
+  //   }
+
+  //   // Apply all transforms together
+  //   element.style.transform = `translate(${transforms.translate}) scale(${transforms.scale}) rotate(${transforms.rotate})`
+  // }
 
   const removeAnimation = (animationId) => {
     const index = animations.value.findIndex((anim) => anim.id === animationId)
     if (index !== -1) {
       animations.value.splice(index, 1)
     }
+  }
+
+  const resetToInitialState = (element, initialState) => {
+    // Reset position
+    selectedObject.value.x = initialState.x
+    selectedObject.value.y = initialState.y
+    
+    // Reset all transforms and opacity
+    element.style.transform = ''
+    element.style.opacity = initialState.opacity
+    
+    // Clear all dataset values
+    element.dataset.translate = `${initialState.x}px, ${initialState.y}px`
+    element.dataset.scale = '1'
+    element.dataset.rotate = '0deg'
   }
 
   return {

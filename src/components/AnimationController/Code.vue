@@ -33,7 +33,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-4xl p-4 mx-auto">
+  <div class="w-full max-w-4xl mx-auto">
     <div class="bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden">
       <!-- Editor Header -->
       <div class="bg-[#2d2d2d] px-4 py-2 flex items-center gap-2">

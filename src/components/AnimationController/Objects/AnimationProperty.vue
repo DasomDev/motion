@@ -5,22 +5,7 @@ import { storeToRefs } from 'pinia'
 
 const controllerStore = useControllerStore()
 const objectStore = useObjectStore()
-const {
-  EASING_OPTIONS,
-  selectedAnimationType,
-  animationConfig,
-} = storeToRefs(controllerStore)
-
-// const animationConfig = ref({
-//   x: 0,
-//   y: 0,
-//   opacityStart: 1,
-//   opacityEnd: 0,
-//   scaleStart: 1,
-//   scaleEnd: 0,
-//   duration: 1000,
-//   easing: 'linear',
-// })
+const { EASING_OPTIONS, selectedAnimationType, animationConfig } = storeToRefs(controllerStore)
 
 watch(selectedAnimationType, (newType) => {
   // Reset values when animation type changes
@@ -49,12 +34,16 @@ const makeMarker = () => {
     true
   )
   // console.log('makeMarker')
+} 
+
+const toggleLoop = () => {
+  animationConfig.value.loop = !animationConfig.value.loop
 }
 </script>
 
 <template>
   <div class="p-4 bg-purple-200 rounded-lg">
-    <h3>Animation Settings</h3>
+    <h3>애니메이션 설정</h3>
     <div class="flex flex-col gap-3 mt-2">
       <!-- Show x, y inputs for translate and rotate -->
       <template v-if="selectedAnimationType === 'translate' || selectedAnimationType === 'rotate'">
@@ -86,7 +75,11 @@ const makeMarker = () => {
         <div class="flex flex-col gap-2">
           <p class="flex flex-col">
             <label class="mb-1">Opacity Start with</label>
-            <input type="number" v-model="animationConfig.opacityStart" class="p-2 border rounded" />
+            <input
+              type="number"
+              v-model="animationConfig.opacityStart"
+              class="p-2 border rounded"
+            />
           </p>
           <p class="flex flex-col">
             <label class="mb-1">Opacity End with</label>
@@ -121,12 +114,28 @@ const makeMarker = () => {
       </div>
 
       <div class="flex flex-col">
-        <label class="mb-1">Easing</label>
+        <label class="mb-1">Timing</label>
         <select v-model="animationConfig.easing" class="p-2 bg-white border rounded">
           <option v-for="option in EASING_OPTIONS" :key="option.value" :value="option.value">
             {{ option.label }}
           </option>
         </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="mb-1">Loop/Infinite</label>
+        <label
+          :class="animationConfig.loop ? 'bg-[#4D69FF]' : 'bg-[#e6e6e6]'"
+          class="relative flex items-center w-8 h-4 cursor-pointer rounded-2xl"
+          for="loop"
+          @click.prevent="toggleLoop"
+        >
+          <input v-model="animationConfig.loop" class="hidden" name="loop" type="checkbox" />
+          <div
+            :class="animationConfig.loop ? 'translate-x-[15px] bg-[#4D69FF]' : 'translate-x-[0px]'"
+            class="w-3 h-3 rounded-full absolute top-[2px] transition-all duration-300 left-[2px] bg-[#fff]"
+          ></div>
+        </label>
       </div>
     </div>
   </div>

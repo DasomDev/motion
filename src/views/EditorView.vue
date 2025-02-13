@@ -17,21 +17,34 @@ const previewCanvasRef = ref(null)
 </script>
 
 <template>
-  <div class="flex h-full pt-[50px]">
+  <div class="flex h-full pt-[50px] bg-[#1e1e1e]">
     <Header>
       <!-- <button @click="toggleYay">참고{{ yay }}</button> -->
     </Header>
-    <div class="w-[75%] bg-[#F5F5F5] relative">
-      <PreviewCanvas ref="previewCanvasRef" />
-      <ObjectToolBar />
+    <div class="w-[75%] relative border-r border-[#333333]">
+      <!-- Main editor area -->
+      <div
+        class="absolute top-0 left-0 w-full h-8 bg-[#252526] flex items-center px-4 border-b border-[#333333]"
+      >
+        <span class="text-[#CCCCCC] text-sm">Preview</span>
+      </div>
+      <div class="h-full pt-8">
+        <!-- Content area below tab -->
+        <PreviewCanvas ref="previewCanvasRef" class="bg-[#2D2D2D]" />
+        <ObjectToolBar class="absolute transform -translate-x-1/2 bottom-4 left-1/2" />
+      </div>
     </div>
-    <div class="w-[25%] p-6">
-      <AnimationController />
+    <div class="w-[25%] bg-[#252526]"> <!-- Side panel -->
+      <div class="h-8 bg-[#2D2D2D] flex items-center px-4 border-b border-[#333333]">
+        <span class="text-[#CCCCCC] text-sm">Animation Controls</span>
+      </div>
+      <div class="p-4">
+        <AnimationController />
+      </div>
     </div>
   </div>
   <div v-if="yay" class="absolute inset-0 bg-blue-100">
     <button @click="toggleYay">똘백{{ yay }}</button>
-
     <Converter />
   </div>
 </template>

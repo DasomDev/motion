@@ -67,12 +67,6 @@ export const useObjectStore = defineStore('object', () => {
     },
   ])
 
-  // Getters
-
-  const getAnimationsForObject = computed(() => (objectId) => {
-    return animations.value.filter((anim) => anim.objectId === objectId)
-  })
-
   const generateUniqueId = () => {
     let newId
     do {
@@ -91,6 +85,7 @@ export const useObjectStore = defineStore('object', () => {
       radius: object.radius || 50,
       fillStyle: object.fillStyle || '#000000',
       animations: [],
+      ...(object.imageUrl && { imageUrl: object.imageUrl }),
     }
 
     if (isClone) {

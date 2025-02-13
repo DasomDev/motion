@@ -46,6 +46,8 @@ const handleGlobalClick = (event) => {
 }
 
 const handleClick = (event, object) => {
+  if (!object) return
+
   if (object) {
     event.stopPropagation()
     selectedObject.value = object
@@ -89,7 +91,9 @@ const onDrag = (event) => {
 }
 
 const endDrag = () => {
+  // console.log('endDrag')
   isDragging.value = false
+  if (!selectedObject.value) return
   if (selectedObject.value && !selectedObject.value.isClone) {
     determineOutsideDirection(selectedObject.value)
   }
@@ -98,7 +102,7 @@ const endDrag = () => {
     x: selectedObject.value.x,
     y: 180,
   }
-  console.log('controllerStore.targetPOS', controllerStore.targetPOS)
+  // console.log('controllerStore.targetPOS', controllerStore.targetPOS)
 }
 
 const determineOutsideDirection = (object) => {
@@ -159,22 +163,10 @@ onUnmounted(() => {
     ref="canvasRef"
     class="relative flex items-center justify-center w-full h-full overflow-hidden"
   >
-    <!-- draggable="true"
-      @dragenter.prevent
-      @dragover.prevent
-      @mousedown="onMouseDown($event)"
-      @mouseup="onMouseUp($event)"
-      @dragstart="onDragStart($event, list, index)"
-      @drop.prevent="onDrop($event, index)"
-      @dragenter="onDragEnter($event, index)" -->
-
     <svg
       ref="svgRef"
       :width="width"
       :height="height"
-      draggable="true"
-      @dragenter.prevent
-      @dragover.prevent
       @mousemove="onDrag"
       @mouseup="endDrag"
       @mouseleave="endDrag"
@@ -183,18 +175,8 @@ onUnmounted(() => {
     >
       <!-- Add grid pattern definition -->
       <defs>
-        <pattern
-          id="grid"
-          width="50"
-          height="50"
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            d="M 50 0 L 0 0 0 50"
-            fill="none"
-            stroke="#ddd"
-            stroke-width="0.5"
-          />
+        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#ddd" stroke-width="0.5" />
           <!-- Add smaller grid lines -->
           <path
             d="M 10 0 L 10 50 M 20 0 L 20 50 M 30 0 L 30 50 M 40 0 L 40 50 M 0 10 L 50 10 M 0 20 L 50 20 M 0 30 L 50 30 M 0 40 L 50 40"
@@ -224,10 +206,24 @@ onUnmounted(() => {
             :class="{ 'cursor-move': true }"
           />
 
+          <image
+            v-if="object.type === 'image'"
+            :x="Number(object.x) || 0"
+            :y="Number(object.y) || 0"
+            :width="Number(object.width) || 100"
+            :height="Number(object.height) || 100"
+            :href="object.imageUrl"
+            preserveAspectRatio="xMidYMid meet"
+            @mousedown="(e) => startDrag(e, object)"
+            @click="(e) => handleClick(e, object)"
+            :class="{ 'cursor-move': true }"
+          />
+
           <!-- Control handles -->
           <template v-if="selectedObject === object">
             <!-- Selection border -->
             <circle
+              v-if="object.type === 'circle'"
               :cx="object.x"
               :cy="object.y"
               :r="object.radius + 2"
@@ -239,6 +235,7 @@ onUnmounted(() => {
 
             <!-- Resize handles -->
             <rect
+              v-if="object.type === 'circle'"
               v-for="(pos, index) in getHandlePositions(object)"
               :key="index"
               :x="pos.x - HANDLE_SIZE / 2"
@@ -267,7 +264,6 @@ onUnmounted(() => {
             @click="(e) => handleClick(e, object)"
             :class="{ 'cursor-move': true }"
           />
-
           <!-- Control handles -->
           <template v-if="selectedObject === object">
             <!-- Selection border -->
@@ -283,6 +279,7 @@ onUnmounted(() => {
 
             <!-- Resize handles -->
             <rect
+              v-if="object.type === 'circle'"
               v-for="(pos, index) in getHandlePositions(object)"
               :key="index"
               :x="pos.x - HANDLE_SIZE / 2"
@@ -297,7 +294,6 @@ onUnmounted(() => {
           </template>
         </g>
       </template>
-
     </svg>
   </div>
 </template>
@@ -308,7 +304,7 @@ onUnmounted(() => {
   max-width: 100%;
   max-height: 100%;
   box-sizing: border-box;
-  /* border: 1px solid red; */
+
   background: #fff;
   overflow: visible;
 }

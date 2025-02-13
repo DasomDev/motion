@@ -18,19 +18,18 @@ const animationConfig = ref({
 })
 </script>
 <template>
-  <div class="flex flex-col gap-2">
-    <p>
+  <div class="flex flex-col gap-6">
+    <div class="text-[#CCCCCC]">
       <label for="animation-type">선택 요소</label>
       <br />
-      {{ selectedObject?.id }}
-    </p>
-    <p>
-      <label for="animation-type">캔버스 기준 좌표</label>
-      x: {{ selectedObject?.x }} y: {{ selectedObject?.y }}
-    </p>
+      {{ selectedObject?.id || '선택된 요소가 없습니다.' }}
+      <p class="text-[#CCCCCC]">
+        <label for="animation-type">캔버스 기준 좌표</label>
+        x: {{ selectedObject?.x }} y: {{ selectedObject?.y }}
+      </p>
+    </div>
 
     <AnimationType />
-
     <AnimationProperty />
   </div>
 </template>
