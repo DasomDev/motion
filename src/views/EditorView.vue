@@ -19,7 +19,7 @@ const previewCanvasRef = ref(null)
 <template>
   <div class="flex h-full pt-[50px]">
     <Header>
-      <button @click="toggleYay">참고{{ yay }}</button>
+      <!-- <button @click="toggleYay">참고{{ yay }}</button> -->
     </Header>
     <div class="w-[75%] bg-[#F5F5F5] relative">
       <PreviewCanvas ref="previewCanvasRef" />

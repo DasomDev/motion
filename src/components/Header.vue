@@ -1,5 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useControllerStore } from '@/store'
+import { storeToRefs } from 'pinia'
+
+const controllerStore = useControllerStore()
+const { activeTab } = storeToRefs(controllerStore)
 
 const tabs = ref([
   {
@@ -20,14 +25,13 @@ const tabs = ref([
   }
 ])
 
-const activeTab = ref(null)
 
 const changeTab = (tab) => {
   activeTab.value = tab
 }
 </script>
 <template>
-  <header class="h-[50px] absolute top-0 left-0 w-full border-b border-[#000] flex items-center justify-between px-10">
+  <header class="h-[50px] absolute top-0 left-0 w-full border-b border-[#000] flex items-center justify-end px-10">
     <slot></slot>
     <div class="flex items-center gap-2">
       <button 

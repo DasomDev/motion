@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useObjectStore } from '@/store'
+import { useObjectStore, useControllerStore } from '@/store'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps({
@@ -19,13 +19,12 @@ const props = defineProps({
 })
 
 const objectStore = useObjectStore()
-const { objects, selectedObject, objectStartFrom } = storeToRefs(objectStore)
+const controllerStore = useControllerStore()
+const { objects, selectedObject, objectStartFrom, cloneObjects } = storeToRefs(objectStore)
 const canvasRef = ref(null)
 const svgRef = ref(null)
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
-
-
 
 const HANDLE_SIZE = 8 // Size of control handles
 const HANDLE_POSITIONS = [
@@ -91,9 +90,15 @@ const onDrag = (event) => {
 
 const endDrag = () => {
   isDragging.value = false
-  if (selectedObject.value) {
+  if (selectedObject.value && !selectedObject.value.isClone) {
     determineOutsideDirection(selectedObject.value)
   }
+
+  controllerStore.targetPOS = {
+    x: selectedObject.value.x,
+    y: 180,
+  }
+  console.log('controllerStore.targetPOS', controllerStore.targetPOS)
 }
 
 const determineOutsideDirection = (object) => {
@@ -154,18 +159,55 @@ onUnmounted(() => {
     ref="canvasRef"
     class="relative flex items-center justify-center w-full h-full overflow-hidden"
   >
+    <!-- draggable="true"
+      @dragenter.prevent
+      @dragover.prevent
+      @mousedown="onMouseDown($event)"
+      @mouseup="onMouseUp($event)"
+      @dragstart="onDragStart($event, list, index)"
+      @drop.prevent="onDrop($event, index)"
+      @dragenter="onDragEnter($event, index)" -->
+
     <svg
       ref="svgRef"
       :width="width"
       :height="height"
+      draggable="true"
+      @dragenter.prevent
+      @dragover.prevent
       @mousemove="onDrag"
       @mouseup="endDrag"
       @mouseleave="endDrag"
       @click="handleClick($event, null)"
-      class="svg-canvas"
+      class="shadow-sm svg-canvas"
     >
-      <!-- Background -->
+      <!-- Add grid pattern definition -->
+      <defs>
+        <pattern
+          id="grid"
+          width="50"
+          height="50"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 50 0 L 0 0 0 50"
+            fill="none"
+            stroke="#ddd"
+            stroke-width="0.5"
+          />
+          <!-- Add smaller grid lines -->
+          <path
+            d="M 10 0 L 10 50 M 20 0 L 20 50 M 30 0 L 30 50 M 40 0 L 40 50 M 0 10 L 50 10 M 0 20 L 50 20 M 0 30 L 50 30 M 0 40 L 50 40"
+            fill="none"
+            stroke="#eee"
+            stroke-width="0.25"
+          />
+        </pattern>
+      </defs>
+
+      <!-- Background with grid -->
       <rect x="0" y="0" :width="width" :height="height" :fill="backgroundColor" />
+      <rect x="0" y="0" :width="width" :height="height" fill="url(#grid)" />
 
       <!-- Objects -->
       <template v-for="object in objects" :key="object.id">
@@ -211,6 +253,51 @@ onUnmounted(() => {
           </template>
         </g>
       </template>
+
+      <template v-for="object in cloneObjects" :key="object.id">
+        <g :id="object.id">
+          <!-- Main circle -->
+          <circle
+            v-if="object.type === 'circle'"
+            :cx="object.x"
+            :cy="object.y"
+            :r="object.radius"
+            :fill="object.fillStyle"
+            @mousedown="(e) => startDrag(e, object)"
+            @click="(e) => handleClick(e, object)"
+            :class="{ 'cursor-move': true }"
+          />
+
+          <!-- Control handles -->
+          <template v-if="selectedObject === object">
+            <!-- Selection border -->
+            <circle
+              :cx="object.x"
+              :cy="object.y"
+              :r="object.radius + 2"
+              fill="none"
+              stroke="#4a9eff"
+              stroke-width="1"
+              stroke-dasharray="4 2"
+            />
+
+            <!-- Resize handles -->
+            <rect
+              v-for="(pos, index) in getHandlePositions(object)"
+              :key="index"
+              :x="pos.x - HANDLE_SIZE / 2"
+              :y="pos.y - HANDLE_SIZE / 2"
+              :width="HANDLE_SIZE"
+              :height="HANDLE_SIZE"
+              fill="white"
+              stroke="#4a9eff"
+              stroke-width="1"
+              class="handle"
+            />
+          </template>
+        </g>
+      </template>
+
     </svg>
   </div>
 </template>
@@ -221,7 +308,7 @@ onUnmounted(() => {
   max-width: 100%;
   max-height: 100%;
   box-sizing: border-box;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   background: #fff;
   overflow: visible;
 }

@@ -45,9 +45,10 @@ export const useObjectStore = defineStore('object', () => {
   // State
   const yay = ref(false)
   const objects = ref([])
+  const cloneObjects = ref([]) // marker 값을 위한 복사객체
   const selectedObject = ref(null)
   const objectStartFrom = ref(null)
- 
+
   const OBJECT_TYPE = ref([
     {
       id: 1,
@@ -81,7 +82,7 @@ export const useObjectStore = defineStore('object', () => {
   }
 
   // Actions
-  const addObject = (object) => {
+  const addObject = (object, isClone = false) => {
     const newObject = {
       id: generateUniqueId(),
       type: object.type || 'circle',
@@ -91,10 +92,16 @@ export const useObjectStore = defineStore('object', () => {
       fillStyle: object.fillStyle || '#000000',
       animations: [],
     }
-    objects.value.push(newObject)
+
+    if (isClone) {
+      newObject.fillStyle = '#E9D5FF'
+      newObject.isClone = true
+      cloneObjects.value.push(newObject)
+    } else {
+      objects.value.push(newObject)
+    }
     return newObject.id
   }
-
 
   const removeObject = (objectId) => {
     const index = objects.value.findIndex((obj) => obj.id === objectId)
@@ -104,10 +111,6 @@ export const useObjectStore = defineStore('object', () => {
       animations.value = animations.value.filter((anim) => anim.objectId !== objectId)
     }
   }
-
-
-
-
 
   const selectObject = (objectId) => {
     const object = objects.value.find((obj) => obj.id === objectId)
@@ -131,10 +134,10 @@ export const useObjectStore = defineStore('object', () => {
 
     // State
     objects,
+    cloneObjects,
     selectedObject,
     objectStartFrom,
     yay,
-
 
     // Actions
     addObject,
