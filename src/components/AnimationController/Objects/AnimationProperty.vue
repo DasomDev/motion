@@ -34,7 +34,7 @@ const makeMarker = () => {
     true
   )
   // console.log('makeMarker')
-} 
+}
 
 const toggleLoop = () => {
   animationConfig.value.loop = !animationConfig.value.loop
@@ -42,9 +42,11 @@ const toggleLoop = () => {
 </script>
 
 <template>
-  <div class="p-4 bg-purple-200 rounded-lg">
-    <h3>애니메이션 설정</h3>
-    <div class="flex flex-col gap-3 mt-2">
+  <div class="overflow-hidden text-gray-200 bg-gray-800 border border-gray-700 rounded-lg">
+    <div class="p-3 bg-gray-700 border-b border-gray-600">
+      <h3 class="m-0 text-sm font-medium">애니메이션 설정</h3>
+    </div>
+    <div class="flex flex-col gap-3 p-4 mt-2">
       <!-- Show x, y inputs for translate and rotate -->
       <template v-if="selectedAnimationType === 'translate' || selectedAnimationType === 'rotate'">
         <div class="flex flex-col">
@@ -125,18 +127,25 @@ const toggleLoop = () => {
       <div class="flex items-center gap-2">
         <label class="mb-1">Loop/Infinite</label>
         <label
-          :class="animationConfig.loop ? 'bg-[#4D69FF]' : 'bg-[#e6e6e6]'"
-          class="relative flex items-center w-8 h-4 cursor-pointer rounded-2xl"
+          :class="animationConfig.loop ? 'bg-gray-800' : 'bg-gray-600'"
+          class="relative flex items-center w-8 h-4 border border-gray-700 cursor-pointer rounded-2xl"
           for="loop"
           @click.prevent="toggleLoop"
         >
           <input v-model="animationConfig.loop" class="hidden" name="loop" type="checkbox" />
           <div
-            :class="animationConfig.loop ? 'translate-x-[15px] bg-[#4D69FF]' : 'translate-x-[0px]'"
-            class="w-3 h-3 rounded-full absolute top-[2px] transition-all duration-300 left-[2px] bg-[#fff]"
+            :class="animationConfig.loop ? 'translate-x-[15px] bg-[#825feb]' : 'translate-x-[0px]'"
+            class="w-3 h-3 rounded-full absolute top-[2px] transition-all duration-300 left-[2px] bg-gray-400"
           ></div>
         </label>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+input,
+select {
+  background-color: #252526;
+}
+</style>

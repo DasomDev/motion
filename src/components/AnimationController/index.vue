@@ -14,7 +14,7 @@ const targetComponent = computed(() => {
 })
 </script>
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 overflow-y-auto">
     <component :is="targetComponent" />
   </div>
 </template>

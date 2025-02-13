@@ -17,7 +17,7 @@ const previewCanvasRef = ref(null)
 </script>
 
 <template>
-  <div class="flex h-full pt-[50px] bg-[#1e1e1e]">
+  <div class="flex h-full pt-[50px] bg-[#1e1e1e] h-screen overflow-hidden">
     <Header>
       <!-- <button @click="toggleYay">참고{{ yay }}</button> -->
     </Header>
@@ -38,7 +38,7 @@ const previewCanvasRef = ref(null)
       <div class="h-8 bg-[#2D2D2D] flex items-center px-4 border-b border-[#333333]">
         <span class="text-[#CCCCCC] text-sm">Animation Controls</span>
       </div>
-      <div class="p-4">
+      <div class="p-4 overflow-x-clip overflow-y-auto h-[calc(100vh-66px)]">
         <AnimationController />
       </div>
     </div>
@@ -48,3 +48,26 @@ const previewCanvasRef = ref(null)
     <Converter />
   </div>
 </template>
+
+<style>
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+
+</style>
